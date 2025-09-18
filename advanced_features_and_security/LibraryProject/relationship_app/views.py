@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth import login
 from .forms import BookForm
 from django.contrib.auth.decorators import permission_required,user_passes_test
+from django.db.models import Q
 
 
 # Create your views here.
@@ -118,3 +119,11 @@ def delete_book(request, book_id):
         book.delete()
         return redirect("list_books")
     return render(request, "relationship_app/delete_book.html", {"book": book})
+
+def search_books(request):
+    q = request.GET.get("q", "").strip()
+    books = Book.objects.none()
+    if q:
+        # parameterized ORM filtering (safe)
+        books = Book.objects.filter(Q(title__icontains=q) | Q(author__name__icontains=q))
+    return render(request, "relationship_app/search_results.html", {"books": books, "q": q})

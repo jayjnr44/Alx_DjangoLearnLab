@@ -40,9 +40,11 @@ INSTALLED_APPS = [
     'bookshelf',
     'relationship_app',
 ]
+INSTALLED_APPS += ['csp']
 
 LOGIN_REDIRECT_URL = "list_books"
 LOGOUT_REDIRECT_URL = "login"
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -52,7 +54,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+    'csp.middleware.CSPMiddleware', 
+] 
+
+MIDDLEWARE = ["csp.middleware.CSPMiddleware"] + MIDDLEWARE  # place early
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")  # try to remove unsafe-inline
 
 ROOT_URLCONF = 'LibraryProject.urls'
 

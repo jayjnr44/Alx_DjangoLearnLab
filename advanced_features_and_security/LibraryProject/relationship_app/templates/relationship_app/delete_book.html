@@ -7,7 +7,7 @@
 <body>
     <h1>Delete Book</h1>
     <p>Are you sure you want to delete "{{ book.title }}"?</p>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <button type="submit">Yes, delete</button>
     </form>
