@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import permission_required
 from .models import Book
+from .forms import ExampleForm
 
 # Create your views here.
 
@@ -40,5 +41,15 @@ def delete_book(request, pk):
     book.delete()
     return redirect("book_list")
 
+def example_form_view(request):
+    if request.method == "POST":
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            # Normally process data (save, send email, etc.)
+            cleaned = form.cleaned_data
+            return render(request, "bookshelf/form_example.html", {"form": form, "submitted": True, "data": cleaned})
+    else:
+        form = ExampleForm()
+    return render(request, "bookshelf/form_example.html", {"form": form})
 
 
