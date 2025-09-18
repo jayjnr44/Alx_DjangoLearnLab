@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,8 +24,10 @@ SECRET_KEY = 'django-insecure-4c-!+$j^tlm6vrt@$jjk1*g0xeoos!@5^_si4gy7s3_&1wfu68
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ["*", "127.0.0.1"]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "example.com,localhost").split(",")
 
 
 # Application definition
@@ -54,7 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'csp.middleware.CSPMiddleware', 
+     
 ] 
 
 MIDDLEWARE = ["csp.middleware.CSPMiddleware"] + MIDDLEWARE  # place early
@@ -151,13 +153,13 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 
-# HSTS (enable only when you have HTTPS fully set up)
-SECURE_HSTS_SECONDS = 60         # increase after testing (e.g. 2592000)
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = False      # set True only after testing & registering
+# HSTS — instruct browsers to use HTTPS for the site. Start small, increase after testing.
+SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", 60))  # increase to 31536000 after testing
+SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", "True") == "True"
+SECURE_HSTS_PRELOAD = os.environ.get("SECURE_HSTS_PRELOAD", "False") == "True"  # enable only after careful testing
 
-# Secure redirect handling
-SECURE_SSL_REDIRECT = True       # force HTTPS (enable when HTTPS is configured)
+# Secure redirect handling # Force HTTPS: redirect all HTTP -> HTTPS
+SECURE_SSL_REDIRECT = SECURE_SSL_REDIRECT = os.environ.get("SECURE_SSL_REDIRECT", "True") == "True"       # force HTTPS (enable when HTTPS is configured)
 
 # CSP (if using django-csp; otherwise you can set header manually)
 # Add 'csp' to INSTALLED_APPS if using django-csp and 'csp.middleware.CSPMiddleware' to MIDDLEWARE
@@ -165,3 +167,17 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")   # avoid 'unsafe-inline' if possible
 CSP_SCRIPT_SRC = ("'self'", )
 
+# If Django is behind a reverse proxy that terminates SSL (e.g., nginx, load balancer),
+# set this to tell Django the original request was HTTPS:
+# e.g., in nginx: proxy_set_header X-Forwarded-Proto $scheme;
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+
+# Use secure cookie SameSite policy (adjust to your flow: 'Lax' is common)
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+
+# Content Security Policy: consider using django-csp for fine control
+# e.g., add 'csp' to INSTALLED_APPS and include its middleware
+# CSP_DEFAULT_SRC = ("'self'",)

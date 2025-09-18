@@ -1,10 +1,14 @@
 from django import forms
 from .models import Book
-from django.core.exceptions import ValidationError  
+from django.core.exceptions import ValidationError
+
+
 class BookForm(forms.ModelForm):
     class Meta:
         model = Book
-        fields = ["title", "author"]
+        fields = ["title", "author", "image"]
+
+    image = forms.ImageField(validators=[validate_image], required=False)
 
 
 def validate_image(file):
