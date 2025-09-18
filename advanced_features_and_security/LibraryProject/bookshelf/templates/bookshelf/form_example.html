@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Example Form</title>
+</head>
+<body>
+  <h1>Submit Example Form</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+  </form>
+
+  {% if submitted %}
+    <h2>Form Submitted Successfully!</h2>
+    <p><strong>Name:</strong> {{ data.name }}</p>
+    <p><strong>Email:</strong> {{ data.email }}</p>
+    <p><strong>Message:</strong> {{ data.message }}</p>
+  {% endif %}
+</body>
+</html>
