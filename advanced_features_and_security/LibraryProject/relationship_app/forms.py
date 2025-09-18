@@ -8,7 +8,16 @@ class BookForm(forms.ModelForm):
         model = Book
         fields = ["title", "author", "image"]
 
-    image = forms.ImageField(validators=[validate_image], required=False)
+    image = forms.ImageField(required=False)
+
+    def clean_image(self):
+        image = self.cleaned_data.get("image")
+        if not image:
+            return image
+        max_mb = 5
+        if image.size > max_mb * 1024 * 1024:
+            raise ValidationError(f"Max file size is {max_mb}MB")
+        return image
 
 
 def validate_image(file):

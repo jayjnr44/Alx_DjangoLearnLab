@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+
 import os
 from pathlib import Path
 
@@ -20,77 +21,78 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4c-!+$j^tlm6vrt@$jjk1*g0xeoos!@5^_si4gy7s3_&1wfu68'
+SECRET_KEY = "django-insecure-4c-!+$j^tlm6vrt@$jjk1*g0xeoos!@5^_si4gy7s3_&1wfu68"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ["*", "127.0.0.1"]
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "example.com,localhost").split(",")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "example.com,localhost").split(
+    ","
+)
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'bookshelf',
-    'relationship_app',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "bookshelf",
+    "relationship_app",
 ]
-INSTALLED_APPS += ['csp']
+INSTALLED_APPS += ["csp"]
 
 LOGIN_REDIRECT_URL = "list_books"
 LOGOUT_REDIRECT_URL = "login"
 
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-     
-] 
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
 
 MIDDLEWARE = ["csp.middleware.CSPMiddleware"] + MIDDLEWARE  # place early
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")  # try to remove unsafe-inline
 
-ROOT_URLCONF = 'LibraryProject.urls'
+ROOT_URLCONF = "LibraryProject.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'LibraryProject.wsgi.application'
+WSGI_APPLICATION = "LibraryProject.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
@@ -100,16 +102,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -117,9 +119,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -129,24 +131,24 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = 'relationship_app.CustomUser'
+AUTH_USER_MODEL = "relationship_app.CustomUser"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Cookie & session security
-SESSION_COOKIE_SECURE = True     # only send cookies over HTTPS
-CSRF_COOKIE_SECURE = True        # only send csrf cookie over HTTPS
-SESSION_COOKIE_HTTPONLY = True   # JS can't read session cookie
-CSRF_COOKIE_HTTPONLY = False     # keep False usually; middleware protects it
+SESSION_COOKIE_SECURE = True  # only send cookies over HTTPS
+CSRF_COOKIE_SECURE = True  # only send csrf cookie over HTTPS
+SESSION_COOKIE_HTTPONLY = True  # JS can't read session cookie
+CSRF_COOKIE_HTTPONLY = False  # keep False usually; middleware protects it
 
 # Browser XSS protections & content sniffing
 SECURE_BROWSER_XSS_FILTER = True
@@ -154,24 +156,30 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 
 # HSTS — instruct browsers to use HTTPS for the site. Start small, increase after testing.
-SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", 60))  # increase to 31536000 after testing
-SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", "True") == "True"
-SECURE_HSTS_PRELOAD = os.environ.get("SECURE_HSTS_PRELOAD", "False") == "True"  # enable only after careful testing
+SECURE_HSTS_SECONDS = int(
+    os.environ.get("SECURE_HSTS_SECONDS", 60)
+)  # increase to 31536000 after testing
+SECURE_HSTS_INCLUDE_SUBDOMAINS = (
+    os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", "True") == "True"
+)
+SECURE_HSTS_PRELOAD = (
+    os.environ.get("SECURE_HSTS_PRELOAD", "False") == "True"
+)  # enable only after careful testing
 
 # Secure redirect handling # Force HTTPS: redirect all HTTP -> HTTPS
-SECURE_SSL_REDIRECT = SECURE_SSL_REDIRECT = os.environ.get("SECURE_SSL_REDIRECT", "True") == "True"       # force HTTPS (enable when HTTPS is configured)
-
+SECURE_SSL_REDIRECT = (
+    os.environ.get("SECURE_SSL_REDIRECT", "True") == "True"
+)  # force HTTPS (enable when HTTPS is configured)
 # CSP (if using django-csp; otherwise you can set header manually)
 # Add 'csp' to INSTALLED_APPS if using django-csp and 'csp.middleware.CSPMiddleware' to MIDDLEWARE
 CSP_DEFAULT_SRC = ("'self'",)
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")   # avoid 'unsafe-inline' if possible
-CSP_SCRIPT_SRC = ("'self'", )
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")  # avoid 'unsafe-inline' if possible
+CSP_SCRIPT_SRC = ("'self'",)
 
 # If Django is behind a reverse proxy that terminates SSL (e.g., nginx, load balancer),
 # set this to tell Django the original request was HTTPS:
 # e.g., in nginx: proxy_set_header X-Forwarded-Proto $scheme;
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
 
 
 # Use secure cookie SameSite policy (adjust to your flow: 'Lax' is common)
