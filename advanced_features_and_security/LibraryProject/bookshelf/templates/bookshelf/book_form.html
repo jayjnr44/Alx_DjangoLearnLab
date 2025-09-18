@@ -1,0 +1,8 @@
+<h1>{% if book %}Edit{% else %}Add{% endif %} Book</h1>
+<form method="post">
+  {% csrf_token %}
+  <input type="text" name="title" value="{{ book.title|default:'' }}" placeholder="Title"><br>
+  <input type="text" name="author" value="{{ book.author|default:'' }}" placeholder="Author"><br>
+  <input type="number" name="publication_year" value="{{ book.publication_year|default:'' }}" placeholder="Year"><br>
+  <button type="submit">Save</button>
+</form>
