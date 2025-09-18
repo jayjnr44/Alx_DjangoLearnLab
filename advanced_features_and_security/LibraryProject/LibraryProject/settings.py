@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-4c-!+$j^tlm6vrt@$jjk1*g0xeoos!@5^_si4gy7s3_&1wfu68'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*", "127.0.0.1"]
 
 
 # Application definition
@@ -130,3 +130,30 @@ AUTH_USER_MODEL = 'relationship_app.CustomUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Cookie & session security
+SESSION_COOKIE_SECURE = True     # only send cookies over HTTPS
+CSRF_COOKIE_SECURE = True        # only send csrf cookie over HTTPS
+SESSION_COOKIE_HTTPONLY = True   # JS can't read session cookie
+CSRF_COOKIE_HTTPONLY = False     # keep False usually; middleware protects it
+
+# Browser XSS protections & content sniffing
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+
+# HSTS (enable only when you have HTTPS fully set up)
+SECURE_HSTS_SECONDS = 60         # increase after testing (e.g. 2592000)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = False      # set True only after testing & registering
+
+# Secure redirect handling
+SECURE_SSL_REDIRECT = True       # force HTTPS (enable when HTTPS is configured)
+
+# CSP (if using django-csp; otherwise you can set header manually)
+# Add 'csp' to INSTALLED_APPS if using django-csp and 'csp.middleware.CSPMiddleware' to MIDDLEWARE
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")   # avoid 'unsafe-inline' if possible
+CSP_SCRIPT_SRC = ("'self'", )
+
