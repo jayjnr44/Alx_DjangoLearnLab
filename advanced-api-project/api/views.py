@@ -11,7 +11,7 @@ class BookListView(generics.ListCreateAPIView):
     permission_classes = [permissions.AllowAny]
 
 #retrieve a single book(read-only for everyone)
-class Detailview(generics.RetrieveAPIView):
+class DetailView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [permissions.AllowAny]
