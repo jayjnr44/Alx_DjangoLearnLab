@@ -1,13 +1,15 @@
+{% load static %}
 {% extends 'base.html' %}
 {% block content %}
-  <h2>Register</h2>
+  <h2>Login</h2>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Register</button>
+    <button type="submit">Login</button>
   </form>
   {% if form.errors %}
     <div class="error">{{ form.errors }}</div>
   {% endif %}
-  <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+  <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
 {% endblock %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% block content %}
+  <h2>Register</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Register</button>
+  </form>
+  {% if form.errors %}
+    <div class="error">{{ form.errors }}</div>
+  {% endif %}
+  <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+{% endblock %}
