@@ -1,5 +1,5 @@
 {% load static %}
-{% extends 'base.html' %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">{% extends 'base.html' %}
 {% block content %}
   <h2>Login</h2>
   <form method="post">
@@ -12,4 +12,3 @@
   {% endif %}
   <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
 {% endblock %}
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
