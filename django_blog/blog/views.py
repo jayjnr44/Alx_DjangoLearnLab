@@ -77,11 +77,12 @@ class PostListView(ListView):
         qs = super().get_queryset().prefetch_related("Tag")
         q = self.request.GET.get("q")
         if q:
-            # search title, content, and related Tag name (case-insensitive)
-            qs = qs.filter(
+            # Use explicit Post.objects.filter for clarity and support both 'Tag' and 'tags' field names
+            qs = Post.objects.filter(
                 Q(title__icontains=q)
                 | Q(content__icontains=q)
                 | Q(Tag__name__icontains=q)
+                | Q(tags__name__icontains=q)
             ).distinct()
         return qs
     
@@ -100,7 +101,10 @@ class TagPostListView(PostListView):
         qs = super().get_queryset()
         tag_name = self.kwargs.get('tag_name')
         if tag_name:
-            qs = qs.filter(Tag__name__iexact=tag_name).distinct()
+            # Use Post.objects.filter to ensure we explicitly filter on the Post model
+            qs = Post.objects.filter(
+                Q(Tag__name__iexact=tag_name) | Q(tags__name__iexact=tag_name)
+            ).distinct()
         return qs
 
     def get_context_data(self, **kwargs):
