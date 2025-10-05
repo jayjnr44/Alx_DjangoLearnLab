@@ -94,7 +94,7 @@ class PostListView(ListView):
         return context
 
 
-class TagPostListView(PostListView):
+class PostByTagListView(PostListView):
     """List posts filtered by a tag name passed in the URL as `tag_name`."""
 
     def get_queryset(self):
