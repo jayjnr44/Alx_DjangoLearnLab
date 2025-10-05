@@ -3,6 +3,12 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Post, Comment, Tag
 
+# Prefer taggit's TagWidget if available (optional dependency)
+try:
+    from taggit.forms import TagWidget as TaggitTagWidget  # type: ignore
+except Exception:
+    TaggitTagWidget = None
+
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -24,7 +30,7 @@ class PostForm(forms.ModelForm):
     tags = forms.CharField(
         required=False,
         help_text="Enter comma-separated tags. New tags will be created.",
-        widget=forms.TextInput(attrs={"placeholder": "tag1, tag2, tag3"}),
+        widget=(TaggitTagWidget() if TaggitTagWidget is not None else forms.TextInput(attrs={"placeholder": "tag1, tag2, tag3"})),
     )
 
     class Meta:
@@ -65,10 +71,20 @@ class PostForm(forms.ModelForm):
             self._save_tags(self.instance, self._pending_tag_string)
 
     def _save_tags(self, post, tag_string):
-        """Helper to parse a comma-separated string into Tag objects and assign them."""
+        """Helper to parse a comma-separated string into Tag objects and assign them.
+
+        Uses a case-insensitive lookup to find existing tags; creates missing ones.
+        """
         if tag_string:
             tag_names = [t.strip() for t in tag_string.split(",") if t.strip()]
-            tag_objs = [Tag.objects.get_or_create(name__iexact=name, defaults={"name": name})[0] for name in tag_names]
+            tag_objs = []
+            for name in tag_names:
+                # try case-insensitive match first
+                existing = Tag.objects.filter(name__iexact=name).first()
+                if existing:
+                    tag_objs.append(existing)
+                else:
+                    tag_objs.append(Tag.objects.create(name=name))
             post.tags.set(tag_objs)
         else:
             post.tags.clear()
