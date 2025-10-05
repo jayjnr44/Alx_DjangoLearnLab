@@ -1,7 +1,7 @@
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django import forms
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -21,7 +21,6 @@ class RegisterForm(UserCreationForm):
 
 
 class PostForm(forms.ModelForm):
-    # Accept comma-separated tag names from the form (e.g. "django, python, tips")
     tags = forms.CharField(
         required=False,
         help_text="Enter comma-separated tags. New tags will be created.",
@@ -41,41 +40,38 @@ class PostForm(forms.ModelForm):
     def save(self, commit=True, author=None):
         """
         Save the Post instance and handle tags.
-
-        - `tags` field accepts comma-separated names. New Tag objects are created if needed.
-        - If `author` is provided, attach it to the post before saving.
         """
-        # Pop tag string from cleaned_data so ModelForm doesn't try to set it directly
-        tag_string = self.cleaned_data.pop("tags", "")
-
+        tag_string = self.cleaned_data.get("tags", "")
         post = super().save(commit=False)
+
         if author is not None and hasattr(post, "author"):
             post.author = author
 
         if commit:
             post.save()
-
-        # Parse tag names, create or get Tag objects, and assign to post
-        if tag_string:
-            # Split by comma and normalize whitespace, ignore empty names
-            tag_names = [t.strip() for t in tag_string.split(",") if t.strip()]
-            from .models import Tag
-
-            tag_objs = []
-            for name in tag_names:
-                tag_obj, _ = Tag.objects.get_or_create(
-                    name__iexact=name, defaults={"name": name}
-                )
-                tag_objs.append(tag_obj)
-
-            # assign tags (replace any existing tags)
-            post.Tag.set(tag_objs)
+            self._save_tags(post, tag_string)
         else:
-            # If empty string provided, clear tags
-            if post.pk:
-                post.Tag.clear()
+            # store tag string to use later when save_m2m() is called
+            self._pending_tag_string = tag_string
 
         return post
+
+    def save_m2m(self):
+        """
+        Handle tags after instance is saved (when commit=False).
+        """
+        super().save_m2m()
+        if hasattr(self, "_pending_tag_string"):
+            self._save_tags(self.instance, self._pending_tag_string)
+
+    def _save_tags(self, post, tag_string):
+        """Helper to parse a comma-separated string into Tag objects and assign them."""
+        if tag_string:
+            tag_names = [t.strip() for t in tag_string.split(",") if t.strip()]
+            tag_objs = [Tag.objects.get_or_create(name__iexact=name, defaults={"name": name})[0] for name in tag_names]
+            post.tags.set(tag_objs)
+        else:
+            post.tags.clear()
 
 
 class CommentForm(forms.ModelForm):
