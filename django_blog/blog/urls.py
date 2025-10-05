@@ -13,8 +13,8 @@ urlpatterns = [
         auth_views.LogoutView.as_view(template_name="blog/logout.html"),
         name="logout",
     ),
-    # path("register/", views.register_view, name="register"),
-    # path("profile/", views.profile_view, name="profile"),
+    path("register/", views.register, name="register"),
+    path("profile/", views.profile, name="profile"),
     # Post CRUD
     path("posts/", views.PostListView.as_view(), name="post-list"),
     path("posts/<int:pk>/", views.PostDetailView.as_view(), name="post-detail"),
@@ -35,7 +35,7 @@ urlpatterns = [
     ),
     # Comment routes
     path(
-        "post/<int:pk>/comments/new/",
+        "posts/<int:post_pk>/comments/new/",
         views.CommentCreateView.as_view(),
         name="comment-create",
     ),
