@@ -51,5 +51,5 @@ urlpatterns = [
         name="comment-delete",
     ),
     # View posts by tag name
-    path("tag/<slug:tag_slug>/", views.PostByTagListView.as_view(), name="posts-by-tag"),
+    path("tags/<slug:tag_slug>/", views.PostByTagListView.as_view(), name="posts-by-tag"),
 ]
