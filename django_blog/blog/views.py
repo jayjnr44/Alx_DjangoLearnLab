@@ -25,7 +25,7 @@ def register(request):
             return redirect("login")
     else:
         form = CustomUserCreationForm()
-    return render(request, "registration/register.html", {"form": form})
+    return render(request, "blog/register.html", {"form": form})
 
 
 # Profile update form
@@ -62,7 +62,7 @@ def profile(request):
             return redirect("profile")
     else:
         form = ProfileUpdateForm(instance=user, initial=initial)
-    return render(request, "profile.html", {"form": form, "user": user})
+    return render(request, "blog/profile.html", {"form": form, "user": user})
 
 
 class PostListView(ListView):
