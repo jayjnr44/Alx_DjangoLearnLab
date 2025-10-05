@@ -17,6 +17,7 @@ urlpatterns = [
     path("profile/", views.profile, name="profile"),
     # Post CRUD
     path("posts/", views.PostListView.as_view(), name="post-list"),
+    path("search/", views.SearchResultsView.as_view(), name="post-search"),
     path("posts/<int:pk>/", views.PostDetailView.as_view(), name="post-detail"),
     path("posts/create/", views.PostCreateView.as_view(), name="post-create"),
     path("posts/<int:pk>/update/", views.PostUpdateView.as_view(), name="post-update"),
@@ -49,4 +50,6 @@ urlpatterns = [
         views.CommentDeleteView.as_view(),
         name="comment-delete",
     ),
+    # View posts by tag name
+    path("tag/<slug:tag_name>/", views.TagPostListView.as_view(), name="posts-by-tag"),
 ]

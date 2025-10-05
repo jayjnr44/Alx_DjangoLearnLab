@@ -7,6 +7,13 @@
   <div class="post-content">
     {{ post.content|linebreaks }}
   </div>
+  {% if post.Tag.all %}
+    <p class="tags">Tags:
+      {% for tag in post.Tag.all %}
+        <a href="{% url 'posts-by-tag' tag.name %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </p>
+  {% endif %}
 
   {% if user == post.author %}
     <p>

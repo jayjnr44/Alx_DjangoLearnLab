@@ -11,6 +11,7 @@ class Post(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
+    Tag = models.ManyToManyField('Tag', related_name='posts', blank=True)
 
     class Meta:
         ordering = ["-created_at"]
@@ -50,3 +51,15 @@ class Comment(models.Model):
     def get_absolute_url(self):
         # After creating/updating/deleting a comment, redirect back to the post detail
         return reverse("post-detail", kwargs={"pk": self.post.pk})
+    
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+    
+

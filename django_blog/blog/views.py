@@ -15,6 +15,7 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
 )
+from django.db.models import Q
 
 
 def register(request):
@@ -70,6 +71,51 @@ class PostListView(ListView):
     template_name = "blog/post_list.html"  # blog/templates/blog/post_list.html
     context_object_name = "posts"
     paginate_by = 10
+
+    def get_queryset(self):
+        """Allow searching posts by title, content, or tag name using ?q=..."""
+        qs = super().get_queryset().prefetch_related("Tag")
+        q = self.request.GET.get("q")
+        if q:
+            # search title, content, and related Tag name (case-insensitive)
+            qs = qs.filter(
+                Q(title__icontains=q)
+                | Q(content__icontains=q)
+                | Q(Tag__name__icontains=q)
+            ).distinct()
+        return qs
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['q'] = self.request.GET.get('q', '')
+        # Heading helps templates display whether this is a search or normal listing
+        context['heading'] = 'Search results' if self.request.GET.get('q') else 'Posts'
+        return context
+
+
+class TagPostListView(PostListView):
+    """List posts filtered by a tag name passed in the URL as `tag_name`."""
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        tag_name = self.kwargs.get('tag_name')
+        if tag_name:
+            qs = qs.filter(Tag__name__iexact=tag_name).distinct()
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['heading'] = f"Posts tagged '{self.kwargs.get('tag_name')}'"
+        context['tag_name'] = self.kwargs.get('tag_name')
+        return context
+
+
+class SearchResultsView(PostListView):
+    """Explicit view for search results; delegates to PostListView filtering via ?q="""
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['heading'] = f"Search results for \"{self.request.GET.get('q','')}\""
+        return context
 
 
 class PostDetailView(DetailView):

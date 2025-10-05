@@ -6,12 +6,24 @@
   <p><a href="{% url 'post-create' %}">Create new post</a></p>
 {% endif %}
 
+<form method="get" action="{% url 'post-search' %}" class="search-form">
+  <input type="text" name="q" value="{{ request.GET.q|default_if_none:'' }}" placeholder="Search posts, content, or tags...">
+  <button type="submit">Search</button>
+</form>
+
 {% for post in posts %}
   <article class="post-snippet">
     <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
     <p class="meta">by {{ post.author.username }} — {{ post.created_at|date:"F j, Y, H:i" }}</p>
     <p>{{ post.content|truncatewords:40 }}</p>
     <p><a href="{{ post.get_absolute_url }}">Read more</a></p>
+    {% if post.Tag.all %}
+      <p class="tags">Tags:
+        {% for tag in post.Tag.all %}
+          <a href="{% url 'posts-by-tag' tag.name %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      </p>
+    {% endif %}
   </article>
   <hr>
 {% empty %}
