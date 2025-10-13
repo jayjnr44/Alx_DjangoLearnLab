@@ -10,7 +10,7 @@ from rest_framework.decorators import action
 from .serializers import UserSerializer
 
 # Create your views here.
-class RegisterView(generics.CreateAPIView):
+class RegisterView(generics.GenericAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
