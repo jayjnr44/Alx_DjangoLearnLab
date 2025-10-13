@@ -6,6 +6,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Q
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
+from notifications.models import Notification
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -66,6 +68,44 @@ class PostViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    # ✅ Like a post
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def like(self, request, pk=None):
+        post = self.get_object()
+        user = request.user
+
+        # Prevent duplicate likes
+        like, created = Like.objects.get_or_create(user=user, post=post)
+        if not created:
+            return Response({'detail': 'You have already liked this post.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a notification for the post author
+        if post.author != user:
+            Notification.objects.create(
+                recipient=post.author,
+                actor=user,
+                verb='liked your post',
+                target_content_type=ContentType.objects.get_for_model(Post),
+                target_object_id=post.id
+            )
+
+        return Response({'status': 'post liked'}, status=status.HTTP_201_CREATED)
+
+    # ✅ Unlike a post
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def unlike(self, request, pk=None):
+        post = self.get_object()
+        user = request.user
+
+        like = Like.objects.filter(user=user, post=post).first()
+        if like:
+            like.delete()
+            return Response({'status': 'post unliked'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'You have not liked this post.'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -84,8 +124,16 @@ class CommentViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         # Assign the logged-in user as author
-        serializer.save(author=self.request.user)
-
+        comment= serializer.save(author=self.request.user)
+        post = comment.post
+        if post.author != self.request.user:
+            Notification.objects.create(
+                recipient=post.author,
+                actor=self.request.user,
+                verb='commented on your post',
+                target_content_type=ContentType.objects.get_for_model(post),
+                target_object_id=post.id
+            )   
     def get_queryset(self):
         # Optional: Filter comments by post ID via ?post=<post_id>
         queryset = super().get_queryset()

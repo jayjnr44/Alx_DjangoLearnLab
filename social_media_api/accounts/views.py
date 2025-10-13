@@ -5,10 +5,15 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.views import APIView
 from .serializers import UserSerializer,LoginSerializer
-from .models import CustomUser,user
+from .models import CustomUser
 from rest_framework.decorators import action
 from .serializers import UserSerializer
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
+from notifications.models import Notification
 
+
+user = get_user_model()
 # Create your views here.
 class RegisterView(generics.GenericAPIView):
     queryset = CustomUser.objects.all()
@@ -40,6 +45,15 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({'detail': "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
         
         request.user.follow(user_to_follow)
+        
+    # Create a notification for the followed user
+        Notification.objects.create(
+            recipient=user_to_follow,
+            actor=request.user,
+            verb='started following you',
+            target_content_type=ContentType.objects.get_for_model(user_to_follow),
+            target_object_id=user_to_follow.id
+        )
         return Response({'detail': f'You are now following {user_to_follow.username}.'}, status=status.HTTP_200_OK)
     
     @action(detail=True, methods=['posts'])
