@@ -2,6 +2,9 @@ from rest_framework import viewsets, permissions, filters
 from rest_framework.exceptions import PermissionDenied
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.db.models import Q
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -38,6 +41,30 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # Assign the logged-in user as author
         serializer.save(author=self.request.user)
+
+    def get_queryset(self):
+        # Default: show all posts (optional filtering by query params)
+        queryset = Post.objects.all().order_by('-created_at')
+        search = self.request.query_params.get('search')
+        if search:
+            queryset = queryset.filter(Q(title__icontains=search) | Q(content__icontains=search))
+        return queryset
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def feed(self, request):
+        """Return a feed of posts from users the current user follows."""
+        user = request.user
+        followed_users = user.following.all()
+        posts = Post.objects.filter(author__in=followed_users).order_by('-created_at')
+
+        # Paginate the results
+        page = self.paginate_queryset(posts)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
