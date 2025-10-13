@@ -5,6 +5,7 @@ from .serializers import PostSerializer, CommentSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Q
+from django.contrib.auth import get_user_model
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -28,7 +29,7 @@ class PostViewSet(viewsets.ModelViewSet):
     - Create new post
     - Update/delete only own posts
     """
-    queryset = Post.objects.all()
+    queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
@@ -54,8 +55,8 @@ class PostViewSet(viewsets.ModelViewSet):
     def feed(self, request):
         """Return a feed of posts from users the current user follows."""
         user = request.user
-        followed_users = user.following.all()
-        posts = Post.objects.filter(author__in=followed_users).order_by('-created_at')
+        following_users = user.following.all()
+        posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
 
         # Paginate the results
         page = self.paginate_queryset(posts)
