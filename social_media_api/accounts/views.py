@@ -16,7 +16,7 @@ from notifications.models import Notification
 user = get_user_model()
 # Create your views here.
 class RegisterView(generics.GenericAPIView):
-    queryset = CustomUser.objects.all()
+    queryset = user.objects.all()    
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
@@ -36,7 +36,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    @action(detail=True, methods=['posts'])
+    @action(detail=True, methods=['post'])   
     def follow(self, request, pk=None):
         '''follow another user'''
         user_to_follow = self.get_object()
