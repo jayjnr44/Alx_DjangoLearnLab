@@ -13,5 +13,5 @@ urlpatterns = [
     # Explicit route for feed (optional since it's defined with @action)
     path('feed/', PostViewSet.as_view({'get': 'feed'}), name='user-feed'),
        # Like and Unlike routes
-    path('posts/<int:pk>/like/', views.Like.as_view(), name='like-post'),
-    path('posts/<int:pk>/unlike/', views.Unlike.as_view(), name='unlike-post'),]
+    path('posts/<int:pk>/like/', views.PostViewSet.as_view({'post: like'}), name='like-post'),
+    path('posts/<int:pk>/unlike/', views.PostViewSet.as_view({'post: unlike'}), name='unlike-post'),]
