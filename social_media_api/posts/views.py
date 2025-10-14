@@ -82,10 +82,10 @@ class PostViewSet(viewsets.ModelViewSet):
     )
     def like(self, request, pk=None):
         post = generics.get_object_or_404(Post, pk=pk)
-        user = request.user
+        #user = request.user
 
         # Prevent duplicate likes
-        like, created = Like.objects.get_or_create(user=user, post=post)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
         if not created:
             return Response(
                 {"detail": "You have already liked this post."},
@@ -110,9 +110,9 @@ class PostViewSet(viewsets.ModelViewSet):
     )
     def unlike(self, request, pk=None):
         post = generics.get_object_or_404(Post, pk=pk)
-        user = request.user
+        #user = request.user
 
-        like = Like.objects.filter(user=user, post=post).first()
+        like = Like.objects.filter(user=request.user, post=post).first()
         if like:
             like.delete()
             return Response({"status": "post unliked"}, status=status.HTTP_200_OK)
