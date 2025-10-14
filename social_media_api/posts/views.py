@@ -93,10 +93,10 @@ class PostViewSet(viewsets.ModelViewSet):
             )
 
         # Create a notification for the post author
-        if post.author != user:
+        if post.author != request.user:
             Notification.objects.create(
                 recipient=post.author,
-                actor=user,
+                actor=request.user,
                 verb="liked your post",
                 target_content_type=ContentType.objects.get_for_model(Post),
                 target_object_id=post.id,
