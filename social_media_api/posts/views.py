@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions, filters,generics, status
 from rest_framework.exceptions import PermissionDenied
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from .models import Post, Comment, Like
 from django.contrib.contenttypes.models import ContentType
 from notifications.models import Notification
+from django.shortcuts import get_object_or_404
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -80,7 +81,7 @@ class PostViewSet(viewsets.ModelViewSet):
         detail=True, methods=["post"], permission_classes=[permissions.IsAuthenticated]
     )
     def like(self, request, pk=None):
-        post = self.get_object()
+        post = generics.get_object_or_404(Post, pk=pk)
         user = request.user
 
         # Prevent duplicate likes
@@ -108,7 +109,7 @@ class PostViewSet(viewsets.ModelViewSet):
         detail=True, methods=["post"], permission_classes=[permissions.IsAuthenticated]
     )
     def unlike(self, request, pk=None):
-        post = self.get_object()
+        post = generics.get_object_or_404(Post, pk=pk)
         user = request.user
 
         like = Like.objects.filter(user=user, post=post).first()
