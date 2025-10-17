@@ -1,0 +1,13 @@
+[Unit]
+Description=gunicorn daemon for social_media_api
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/home/ubuntu/social_media_api
+EnvironmentFile=/home/ubuntu/social_media_api/.env
+ExecStart=/home/ubuntu/.local/bin/gunicorn --workers 3 --bind unix:/run/gunicorn.sock social_media_api.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
