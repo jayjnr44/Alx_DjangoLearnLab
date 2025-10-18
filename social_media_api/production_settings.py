@@ -24,7 +24,7 @@
 
 # # DATABASE (expects a DATABASE_URL env var, e.g. postgres://user:pass@host:5432/dbname)
 # DATABASES = {'default': dj_database_url.parse(os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3'))}
-
+ 
 # # Static files (WhiteNoise or S3)
 # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')

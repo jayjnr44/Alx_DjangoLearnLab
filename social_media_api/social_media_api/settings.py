@@ -86,19 +86,18 @@ WSGI_APPLICATION = "social_media_api.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
 # DATABASE (expects a DATABASE_URL env var, e.g. postgres://user:pass@host:5432/dbname)
-DATABASES = {
-    "default": dj_database_url.parse(
-        os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3")
-    )
-}
+db_config = dj_database_url.parse(
+    os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3")
+)
 
+# Ensure PORT is explicitly set for non-SQLite databases
+if 'PORT' not in db_config and db_config.get('ENGINE') != 'django.db.backends.sqlite3':
+    db_config['PORT'] = os.environ.get('DATABASE_PORT', '5432')
+
+DATABASES = {
+    "default": db_config
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
